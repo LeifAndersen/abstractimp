@@ -27,11 +27,15 @@ module IMP
 
   configuration <T color="yellow">
                   <k color="green"> $PGM:Pgm </k>
-                  <state color="red"> .Map </state>
+                  <state color="red">
+                    <pair>
+                      .Map
+                    </pair>
+                  </state>
                 </T>
 
 // AExp
-  rule <k> X:Id => I ...</k> <state>... X |-> I ...</state>
+  rule <k> X:Id => I ...</k> <state>... <pair> X |-> I </pair> ...</state>
   rule I1:Int / I2:Int => I1 /Int I2  when I2 =/=Int 0
   rule I1:Int + I2:Int => I1 +Int I2
 // BExp
@@ -43,13 +47,12 @@ module IMP
   rule {} => .   [structural]
   rule {S} => S  [structural]
 // Stmt
-  rule <k> X = I:Int; => . ...</k> <state>... X |-> (_ => I) ...</state>
+  rule <k> X = I:Int; => . ...</k> <state>... <pair> X |-> (_ => I) </pair> ...</state>
   rule S1 S2 => S1 ~> S2  [structural]
   rule if (true)  S else _ => S
   rule if (false) _ else S => S
   rule while (B) S => if (B) {S while (B) S} else {}  [structural]
 // Pgm
-  rule <k> int (X:Id,Xs:Ids => Xs);_ </k> <state> Rho:Map (. => X|->0) </state>
-    when notBool (X in keys(Rho))
+  rule <k> int (X:Id,Xs:Ids => Xs);_ </k> <state>... (. => <pair> X|->0 </pair>) ...</state>
   rule int .Ids; S => S  [structural]
 endmodule
